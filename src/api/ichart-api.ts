@@ -154,4 +154,10 @@ export interface IChartApi {
 	 * @returns a canvas with the chart drawn on
 	 */
 	takeScreenshot(): HTMLCanvasElement;
+
+	/**
+	 * Sets the crosshair programmatically
+	 * https://github.com/tradingview/lightweight-charts/issues/438s
+	 */
+	setCrossHairXY(x: number, y: number, visible: boolean): void;
 }

@@ -29,42 +29,52 @@ import { Watermark, WatermarkOptions } from './watermark';
 
 export interface HandleScrollOptions {
 	mouseWheel: boolean;
+
 	pressedMouseMove: boolean;
+
 	horzTouchDrag: boolean;
+
 	vertTouchDrag: boolean;
 }
 
 export interface HandleScaleOptions {
 	mouseWheel: boolean;
+
 	pinch: boolean;
+
 	axisPressedMouseMove: AxisPressedMouseMoveOptions | boolean;
+
 	axisDoubleClickReset: boolean;
 }
 
 type HandleScaleOptionsInternal =
 	Omit<HandleScaleOptions, 'axisPressedMouseMove'>
 	& {
-		/** @public */
+	/** @public */
 		axisPressedMouseMove: AxisPressedMouseMoveOptions;
 	};
 
 export interface AxisPressedMouseMoveOptions {
 	time: boolean;
+
 	price: boolean;
 }
 
 export interface HoveredObject {
 	hitTestData?: unknown;
+
 	externalId?: string;
 }
 
 export interface HoveredSource {
 	source: IPriceDataSource;
+
 	object?: HoveredObject;
 }
 
 export interface PriceScaleOnPane {
 	priceScale: PriceScale;
+
 	pane: Pane;
 }
 
@@ -72,16 +82,20 @@ type InvalidateHandler = (mask: InvalidateMask) => void;
 
 export type VisiblePriceScaleOptions = PriceScaleOptions;
 export type OverlayPriceScaleOptions = Omit<PriceScaleOptions, 'visible' | 'autoScale'>;
+
 /**
  * Structure describing options of the chart. Series options are to be set separately
  */
 export interface ChartOptions {
 	/** Width of the chart */
 	width: number;
+
 	/** Height of the chart */
 	height: number;
+
 	/** Structure with watermark options */
 	watermark: WatermarkOptions;
+
 	/** Structure with layout options */
 	layout: LayoutOptions;
 
@@ -93,21 +107,28 @@ export interface ChartOptions {
 
 	/** Structure with price scale option for left price scale */
 	leftPriceScale: VisiblePriceScaleOptions;
+
 	/** Structure with price scale option for right price scale */
 	rightPriceScale: VisiblePriceScaleOptions;
+
 	/** Structure describing default price scale options for overlays */
 	overlayPriceScales: OverlayPriceScaleOptions;
 
 	/** Structure with time scale options */
 	timeScale: TimeScaleOptions;
+
 	/** Structure with crosshair options */
 	crosshair: CrosshairOptions;
+
 	/** Structure with grid options */
 	grid: GridOptions;
+
 	/** Structure with localization options */
 	localization: LocalizationOptions;
+
 	/** Structure that describes scrolling behavior or boolean flag that disables/enables all kinds of scrolls */
 	handleScroll: HandleScrollOptions | boolean;
+
 	/** Structure that describes scaling behavior or boolean flag that disables/enables all kinds of scales */
 	handleScale: HandleScaleOptions | boolean;
 }
@@ -115,9 +136,9 @@ export interface ChartOptions {
 export type ChartOptionsInternal =
 	Omit<ChartOptions, 'handleScroll' | 'handleScale' | 'priceScale'>
 	& {
-		/** @public */
+	/** @public */
 		handleScroll: HandleScrollOptions;
-		/** @public */
+	/** @public */
 		handleScale: HandleScaleOptionsInternal;
 	};
 
@@ -446,6 +467,30 @@ export class ChartModel implements IDestroyable {
 		}
 
 		this._crosshair.updateAllViews();
+	}
+
+	public setAndSaveCurrentPositionFire(x: Coordinate, y: Coordinate, fire: boolean, pane: Pane): void {
+		this._crosshair.saveOriginCoord(x, y);
+		let price = NaN;
+		let index = this._timeScale.coordinateToIndex(x);
+
+		const visibleBars = this._timeScale.visibleStrictRange();
+		if (visibleBars !== null) {
+			index = Math.min(Math.max(visibleBars.left(), index), visibleBars.right()) as TimePointIndex;
+		}
+
+		const priceScale = pane.defaultPriceScale();
+		const firstValue = priceScale.firstValue();
+		if (firstValue !== null) {
+			price = priceScale.coordinateToPrice(y, firstValue);
+		}
+		price = this._magnet.align(price, index, pane);
+
+		this._crosshair.setPosition(index, price, pane);
+		this._cursorUpdate();
+		if (fire) {
+			this._crosshairMoved.fire(this._crosshair.appliedIndex(), { x, y });
+		}
 	}
 
 	public updateTimeScale(newBaseIndex: TimePointIndex, newPoints?: readonly TimeScalePoint[]): void {
