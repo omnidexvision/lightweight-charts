@@ -10,7 +10,12 @@ import { TimeScale, TimeScaleOptions } from '../model/time-scale';
 
 import { Time } from './data-consumer';
 import { convertTime } from './data-layer';
-import { ITimeScaleApi, LogicalRangeChangeEventHandler, TimeRange, TimeRangeChangeEventHandler } from './itime-scale-api';
+import {
+	ITimeScaleApi,
+	LogicalRangeChangeEventHandler,
+	TimeRange,
+	TimeRangeChangeEventHandler,
+} from './itime-scale-api';
 
 const enum Constants {
 	AnimationDurationMs = 1000,
@@ -35,6 +40,10 @@ export class TimeScaleApi implements ITimeScaleApi, IDestroyable {
 
 	public scrollPosition(): number {
 		return this._timeScale().rightOffset();
+	}
+
+	public getBarSpacing(): number {
+		return this._timeScale().barSpacing();
 	}
 
 	public scrollToPosition(position: number, animated: boolean): void {

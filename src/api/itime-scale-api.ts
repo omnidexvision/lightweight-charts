@@ -34,6 +34,12 @@ export interface ITimeScaleApi {
 	scrollToRealTime(): void;
 
 	/**
+	 * Custom Implementation to get bar spacing.
+	 * https://github.com/tradingview/lightweight-charts/issues/50#issuecomment-504787139
+	 */
+	getBarSpacing(): number;
+
+	/**
 	 * Returns current visible time range of the chart
 	 *
 	 * @returns visible range or null if the chart has no data at all
