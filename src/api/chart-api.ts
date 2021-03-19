@@ -318,6 +318,18 @@ export class ChartApi implements IChartApi, DataUpdatesConsumer<SeriesType> {
 		return this._timeScaleApi;
 	}
 
+	public setForeignChartRightPriceAxisWidth(width: number | undefined): void {
+		this._chartWidget.setForeignChartRightPriceAxisWidth(width);
+	}
+
+	public getMainPaneWidth(): number {
+		return this._chartWidget.getMainPaneWidth();
+	}
+
+	public setForeignMainPaneWidgetWidth(width: number | undefined): void {
+		this._chartWidget.setForeignMainPaneWidgetWidth(width);
+	}
+
 	public applyOptions(options: DeepPartial<ChartOptions>): void {
 		this._chartWidget.applyOptions(toInternalOptions(options));
 	}

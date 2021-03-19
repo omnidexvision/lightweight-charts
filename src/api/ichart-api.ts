@@ -21,9 +21,13 @@ import { ITimeScaleApi } from './itime-scale-api';
 
 export interface MouseEventParams {
 	time?: UTCTimestamp | BusinessDay;
+
 	point?: Point;
+
 	seriesPrices: Map<ISeriesApi<SeriesType>, BarPrice | BarPrices>;
+
 	hoveredSeries?: ISeriesApi<SeriesType>;
+
 	hoveredMarkerId?: SeriesMarker<Time>['id'];
 }
 
@@ -133,6 +137,27 @@ export interface IChartApi {
 	 * @returns target API
 	 */
 	timeScale(): ITimeScaleApi;
+
+	/**
+	 * Gets the main panel width
+	 *
+	 * @returns the width
+	 */
+	getMainPaneWidth(): number;
+
+	/**
+	 * Overrides the width of the main pane
+	 *
+	 * @param width as number
+	 */
+	setForeignMainPaneWidgetWidth(width: number | undefined): void;
+
+	/**
+	 * Sets a other width param to compare with current width of RightPriceAxis
+	 *
+	 * @param width the foreign width to set
+	 */
+	setForeignChartRightPriceAxisWidth(width: number): void;
 
 	/**
 	 * Applies new options to the chart

@@ -56,6 +56,8 @@ export class ChartWidget implements IDestroyable {
 	private _clicked: Delegate<MouseEventParamsImplSupplier> = new Delegate();
 	private _crosshairMoved: Delegate<MouseEventParamsImplSupplier> = new Delegate();
 	private _onWheelBound: (event: WheelEvent) => void;
+	private _foreignChartRightPriceAxisWidth: number | undefined = 0;
+	private _foreignMainPaneWidgetWidth: number | undefined = 0;
 
 	public constructor(container: HTMLElement, options: ChartOptionsInternal) {
 		this._options = options;
@@ -117,6 +119,18 @@ export class ChartWidget implements IDestroyable {
 
 	public model(): ChartModel {
 		return this._model;
+	}
+
+	public setForeignChartRightPriceAxisWidth(width: number | undefined): void {
+		this._foreignChartRightPriceAxisWidth = width;
+	}
+
+	public getMainPaneWidth(): number {
+		return this._width;
+	}
+
+	public setForeignMainPaneWidgetWidth(width: number | undefined): void {
+		this._foreignMainPaneWidgetWidth = width;
 	}
 
 	public options(): Readonly<ChartOptionsInternal> {
@@ -333,7 +347,11 @@ export class ChartWidget implements IDestroyable {
 				leftPriceAxisWidth = Math.max(leftPriceAxisWidth, ensureNotNull(paneWidget.leftPriceAxisWidget()).optimalWidth());
 			}
 			if (this._isRightAxisVisible()) {
+				// custom hack to overwrite width to sync width of other chart
 				rightPriceAxisWidth = Math.max(rightPriceAxisWidth, ensureNotNull(paneWidget.rightPriceAxisWidget()).optimalWidth());
+				if (this._foreignChartRightPriceAxisWidth) {
+					rightPriceAxisWidth = Math.max(this._foreignChartRightPriceAxisWidth, rightPriceAxisWidth);
+				}
 			}
 
 			totalStretch += paneWidget.stretchFactor();
@@ -341,8 +359,7 @@ export class ChartWidget implements IDestroyable {
 		const width = this._width;
 		const height = this._height;
 
-		const paneWidth = Math.max(width - leftPriceAxisWidth - rightPriceAxisWidth, 0);
-
+		let paneWidth = Math.max(width - leftPriceAxisWidth - rightPriceAxisWidth, 0);
 		// const separatorCount = this._paneSeparators.length;
 		// const separatorHeight = SEPARATOR_HEIGHT;
 		const separatorsHeight = 0; // separatorHeight * separatorCount;
@@ -374,6 +391,10 @@ export class ChartWidget implements IDestroyable {
 
 			accumulatedHeight += paneHeight;
 
+			// custom hack to sync pane width with other chart
+			if (this._foreignMainPaneWidgetWidth) {
+				paneWidth = Math.min(paneWidth, this._foreignMainPaneWidgetWidth);
+			}
 			paneWidget.setSize(new Size(paneWidth, paneHeight));
 			if (this._isLeftAxisVisible()) {
 				paneWidget.setPriceAxisSize(leftPriceAxisWidth, 'left');
