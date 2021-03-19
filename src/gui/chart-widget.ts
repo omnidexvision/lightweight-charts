@@ -26,9 +26,13 @@ import { TimeAxisWidget } from './time-axis-widget';
 
 export interface MouseEventParamsImpl {
 	time?: TimePoint;
+
 	point?: Point;
+
 	seriesPrices: Map<Series, BarPrice | BarPrices>;
+
 	hoveredSeries?: Series;
+
 	hoveredObject?: string;
 }
 
@@ -334,7 +338,6 @@ export class ChartWidget implements IDestroyable {
 
 			totalStretch += paneWidget.stretchFactor();
 		}
-
 		const width = this._width;
 		const height = this._height;
 

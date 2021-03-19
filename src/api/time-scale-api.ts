@@ -38,6 +38,11 @@ export class TimeScaleApi implements ITimeScaleApi, IDestroyable {
 		this._timeRangeChanged.destroy();
 	}
 
+	public unsubscribeAll(): void {
+		this._timeScale().visibleBarsChanged().unsubscribeAll(this);
+		this._timeScale().logicalRangeChanged().unsubscribeAll(this);
+	}
+
 	public scrollPosition(): number {
 		return this._timeScale().rightOffset();
 	}

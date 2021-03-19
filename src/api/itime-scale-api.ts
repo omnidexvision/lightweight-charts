@@ -151,4 +151,14 @@ export interface ITimeScaleApi {
 	 * @returns currently applied options
 	 */
 	options(): Readonly<TimeScaleOptions>;
+
+	/**
+	 * Destroys all registered listener
+	 */
+	destroy(): void;
+
+	/**
+	 * Unsubscribes all listener
+	 */
+	unsubscribeAll(): void;
 }
